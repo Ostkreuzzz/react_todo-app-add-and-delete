@@ -36,20 +36,17 @@ export const App: React.FC = () => {
 
   const isAllCompleted =
     todos.every(todo => todo.completed) && todos.length !== 0;
-  const isSomeCompleted =
-    todos.some(todo => todo.completed) && todos.length !== 0;
   const filteredTodos = getVisibleTodos(todos, selectedFilterType);
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
+  const completedIds = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
 
   function handleClearCompleted() {
-    const toDelete = todos.filter(todo => todo.completed);
-
-    setTodosToDelete(toDelete.map(todo => todo.id));
+    setTodosToDelete(completedIds);
   }
 
-  useEffect(handleUpload, [todosToDelete.length]);
-
-  function deleteTodo(idsToDelete: number[]) {
+  function deleteTodos(idsToDelete: number[]) {
     Promise.allSettled(
       idsToDelete.map(id => {
         todoService
@@ -82,9 +79,11 @@ export const App: React.FC = () => {
       });
   }
 
-  if (!!todosToDelete.length) {
-    deleteTodo(todosToDelete);
-  }
+  useEffect(handleUpload, [todosToDelete.length]);
+
+  useEffect(() => {
+    deleteTodos(todosToDelete);
+  }, [todosToDelete]);
 
   return (
     <div className="todoapp">
@@ -110,8 +109,8 @@ export const App: React.FC = () => {
               onSelectedFilterType={setSelectedFilterType}
               selectedFilterType={selectedFilterType}
               activeTodosCount={activeTodosCount}
-              onClearCompleted={handleClearCompleted}
-              isSomeCompleted={isSomeCompleted}
+              completedTodosIds={completedIds}
+              clearCompletedTodos={handleClearCompleted}
             />
           </>
         )}

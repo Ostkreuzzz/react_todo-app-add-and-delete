@@ -8,7 +8,7 @@ import { Todo } from '../../types/Todo';
 import { handleError } from '../../utils/handleError';
 
 interface Props {
-  onTempTodo: (todo: Todo) => void;
+  onTempTodo: (todo: Todo | null) => void;
   onErrorMessage: (type: ErrorMessages) => void;
   onAdd: (todo: Todo) => Promise<void>;
   isAllCompleted: boolean;
@@ -53,8 +53,15 @@ export const TodoHeader: React.FC<Props> = ({
     onErrorMessage(ErrorMessages.NONE);
 
     onAdd(tempTodo)
-      .then(() => setTitle(''))
+      .then(() => {
+        setTitle('');
+      })
+      .catch(() => {
+        handleError(onErrorMessage, ErrorMessages.ADD_FAIL);
+        onTempTodo(null);
+      })
       .finally(() => {
+        onTempTodo(null);
         setIsSubmiting(false);
       });
   };

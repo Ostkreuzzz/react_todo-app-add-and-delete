@@ -3,18 +3,18 @@ import { FilterTypes } from '../../types/FilterTypes';
 
 interface Props {
   onSelectedFilterType: (type: FilterTypes) => void;
-  onClearCompleted: () => void;
-  isSomeCompleted: boolean;
+  clearCompletedTodos: () => void;
   selectedFilterType: FilterTypes;
   activeTodosCount: number;
+  completedTodosIds: number[];
 }
 
 export const TodoFooter: React.FC<Props> = ({
+  clearCompletedTodos,
   onSelectedFilterType,
-  onClearCompleted,
-  isSomeCompleted,
   selectedFilterType,
   activeTodosCount,
+  completedTodosIds,
 }) => {
   const oneItem = '1 item left';
 
@@ -44,8 +44,8 @@ export const TodoFooter: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!isSomeCompleted}
-        onClick={onClearCompleted}
+        disabled={!completedTodosIds.length}
+        onClick={clearCompletedTodos}
       >
         Clear completed
       </button>
