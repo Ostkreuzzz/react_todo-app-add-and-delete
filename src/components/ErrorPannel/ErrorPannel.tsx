@@ -1,6 +1,6 @@
 import React from 'react';
-import { ErrorMessages } from '../types/ErrorTypes';
 import cn from 'classnames';
+import { ErrorMessages } from '../../types/ErrorTypes';
 
 interface Props {
   errorMessage: ErrorMessages;
