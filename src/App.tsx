@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getTodos } from './api/todos';
 
 import { Todo } from './types/Todo';
@@ -12,10 +12,10 @@ import { handleError } from './utils/handleError';
 
 import * as todoService from './api/todos';
 
-import { TodoHeader } from './components/TodoHeader/TodoHeader';
-import { TodoList } from './components/TodoList/TodoList';
-import { TodoFooter } from './components/TodoFooter/TodoFooter';
-import { ErrorPannel } from './components/ErrorPannel/ErrorPannel';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoList } from './components/TodoList';
+import { TodoFooter } from './components/TodoFooter';
+import { ErrorPannel } from './components/ErrorPannel';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -46,9 +46,9 @@ export const App: React.FC = () => {
     setTodosToDelete(completedIds);
   }
 
-  function deleteTodos(idsToDelete: number[]) {
-    Promise.allSettled(
-      idsToDelete.map(id => {
+  const deleteTodos = useCallback(
+    (idsToDelete: number[]) => {
+      const promises = idsToDelete.map(id => {
         todoService
           .deleteTodo(id)
           .then(() => {
@@ -60,9 +60,12 @@ export const App: React.FC = () => {
             handleError(setErrorMessage, ErrorMessages.DELETE_FAIL);
             setTodosToDelete(() => []);
           });
-      }),
-    );
-  }
+      });
+
+      return Promise.allSettled(promises);
+    },
+    [setTodos, setTodosToDelete, setErrorMessage, todos],
+  );
 
   function addTodo({ title, userId, completed }: Todo) {
     return todoService
@@ -79,11 +82,26 @@ export const App: React.FC = () => {
       });
   }
 
+  function updateTodo(data: Todo, id: number) {
+    return todoService
+      .updateTodo(id, data)
+      .then(updatedTodo => {
+        setTodos(
+          todos.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo)),
+        );
+      })
+      .catch(error => {
+        handleError(setErrorMessage, ErrorMessages.UPDATE_FAIL);
+
+        throw error;
+      });
+  }
+
   useEffect(handleUpload, [todosToDelete.length]);
 
   useEffect(() => {
     deleteTodos(todosToDelete);
-  }, [todosToDelete]);
+  }, [deleteTodos, todosToDelete]);
 
   return (
     <div className="todoapp">
@@ -104,6 +122,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               todosToDelete={todosToDelete}
               tempTodo={tempTodo}
+              onUpdate={updateTodo}
             />
             <TodoFooter
               onSelectedFilterType={setSelectedFilterType}

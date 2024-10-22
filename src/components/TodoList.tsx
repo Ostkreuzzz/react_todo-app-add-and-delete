@@ -1,9 +1,10 @@
+import { TodoItem } from './TodoItem';
+import { Todo } from '../types/Todo';
 import React from 'react';
-import { TodoItem } from '../TodoItem/TodoItem';
-import { Todo } from '../../types/Todo';
 
 interface Props {
   onTodosToDelete: React.Dispatch<React.SetStateAction<number[]>>;
+  onUpdate: (data: Todo, id: number) => Promise<void>;
   todosToDelete: number[];
   tempTodo: Todo | null;
   todos: Todo[];
@@ -11,6 +12,7 @@ interface Props {
 
 export const TodoList: React.FC<Props> = ({
   onTodosToDelete,
+  onUpdate,
   tempTodo,
   todos,
   todosToDelete,
@@ -20,13 +22,18 @@ export const TodoList: React.FC<Props> = ({
       {todos.map(todo => (
         <TodoItem
           onTodosToDelete={onTodosToDelete}
+          onUpdate={onUpdate}
           key={todo.id}
           todo={todo}
           todosToDelete={todosToDelete}
         />
       ))}
       {tempTodo && (
-        <TodoItem todo={tempTodo} onTodosToDelete={onTodosToDelete} />
+        <TodoItem
+          todo={tempTodo}
+          onTodosToDelete={onTodosToDelete}
+          onUpdate={onUpdate}
+        />
       )}
     </section>
   );

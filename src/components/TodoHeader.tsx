@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
-import { USER_ID } from '../../api/todos';
+import { USER_ID } from '../api/todos';
 
-import { ErrorMessages } from '../../types/ErrorTypes';
-import { Todo } from '../../types/Todo';
+import { ErrorMessages } from '../types/ErrorTypes';
+import { Todo } from '../types/Todo';
 
-import { handleError } from '../../utils/handleError';
+import { handleError } from '../utils/handleError';
 
 interface Props {
   onTempTodo: (todo: Todo | null) => void;
@@ -26,10 +26,6 @@ export const TodoHeader: React.FC<Props> = ({
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const todoInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    todoInput.current?.focus();
-  }, [title, isSubmiting, todos]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -70,6 +66,10 @@ export const TodoHeader: React.FC<Props> = ({
     setTitle(event.target.value.trimStart());
     onErrorMessage(ErrorMessages.NONE);
   };
+
+  useEffect(() => {
+    todoInput.current?.focus();
+  }, [title, isSubmiting, todos]);
 
   return (
     <header className="todoapp__header">

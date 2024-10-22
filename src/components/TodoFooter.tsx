@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { FilterTypes } from '../../types/FilterTypes';
+import { FilterTypes } from '../types/FilterTypes';
 
 interface Props {
   onSelectedFilterType: (type: FilterTypes) => void;
@@ -16,12 +16,10 @@ export const TodoFooter: React.FC<Props> = ({
   activeTodosCount,
   completedTodosIds,
 }) => {
-  const oneItem = '1 item left';
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeTodosCount === 1 ? oneItem : `${activeTodosCount} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
